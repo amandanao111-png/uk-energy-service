@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Energy Saver | Home & Business Energy Costs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; }
+        
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #159895;
+            --accent: #ffd700;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero p { font-size: 24px; opacity: 0.9; margin-bottom: 30px; }
+        
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .tab {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active { background: var(--accent); color: var(--primary); font-weight: bold; }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px;
+            transition: transform 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover { transform: scale(1.05); }
+        
+        .calculator {
+            background: white;
+            max-width: 600px;
+            margin: -50px auto 50px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        
+        .calculator h2 { text-align: center; margin-bottom: 30px; color: var(--primary); }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .result {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result.show { display: block; }
+        
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .result-item { text-align: center; padding: 15px; background: white; border-radius: 10px; }
+        .result-item .label { font-size: 14px; color: #666; }
+        .result-item .value { font-size: 24px; font-weight: bold; color: var(--primary); }
+        .result-item.highlight .value { color: #2e7d32; font-size: 32px; }
+        
+        .features { padding: 60px 20px; max-width: 1000px; margin: 0 auto; }
+        .features h2 { text-align: center; margin-bottom: 40px; color: #333; }
+        
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        
+        .feature { padding: 30px; border-radius: 15px; background: #f8f9fa; text-align: center; }
+        .feature-icon { font-size: 48px; margin-bottom: 15px; }
+        
+        .pricing { background: #f0f0f0; padding: 60px 20px; text-align: center; }
+        
+        .price-cards { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        
+        .price-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-width: 280px;
+        }
+        
+        .price-card.featured { border: 3px solid var(--accent); transform: scale(1.05); }
+        
+        .price { font-size: 48px; font-weight: bold; color: var(--primary); }
+        .price span { font-size: 18px; color: #666; }
+        
+        .cta { background: var(--primary); color: white; padding: 80px 20px; text-align: center; }
+        
+        footer { background: #333; color: white; padding: 30px; text-align: center; }
+        
+        .info { background: #e8f5e9; padding: 40px 20px; text-align: center; }
+        
+        .toggle-section { text-align: center; margin: 20px 0; }
+        .toggle-link { color: var(--secondary); cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <h1>⚡ UK Energy Saver</h1>
+        <p>Most UK households save £250-£500/year by switching suppliers. Businesses can save 15-25%.</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showCalculator('residential')">🏠 Residential</button>
+            <button class="tab" onclick="showCalculator('commercial')">🏢 Commercial</button>
+        </div>
+    </section>
+    
+    <!-- Residential Calculator -->
+    <div id="residential-calc" class="calculator">
+        <h2>🏠 Home Energy Calculator</h2>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Electricity Usage (kWh/year)</label>
+                <input type="number" id="elec-usage" placeholder="e.g. 3100" value="46677">
+            </div>
+            <div class="form-group">
+                <label>Gas Usage (kWh/year)</label>
+                <input type="number" id="gas-usage" placeholder="e.g. 12000" value="81758">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Payment Method</label>
+            <select id="payment-method">
+                <option value="direct_debit">Direct Debit (cheapest)</option>
+                <option value="prepayment">Prepayment Meter</option>
+                <option value="credit">Standard Credit</option>
+            </select>
+        </div>
+        
+        <button class="btn" onclick="calculateResidential()" style="width: 100%;">Calculate Savings</button>
+        
+        <div id="res-result" class="result">
+            <h3>📊 Your Energy Report</h3>
+            <div class="result-grid">
+                <div class="result-item">
+                    <div class="label">Current Annual Cost</div>
+                    <div class="value" id="current-cost">£0</div>
+                </div>
+                <div class="result-item highlight">
+                    <div class="label">Potential Savings</div>
+                    <div class="value" id="potential-savings">£0</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">New Annual Cost</div>
+                    <div class="value" id="new-cost">£0</div>
+                </div>
+                <div class="result-item">
+                    <div class="label">Savings Percentage</div>
+                    <div class="value" id="savings-pct">0%</div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; text-align: center; color: #666;">*Based on average UK rates. Actual savings vary by supplier.</p>
+        </div>
+    </div>
+    
+    <!-- Commercial Calculator -->
+    <div id="commercial-calc" class="calculator" style="display: none;">
+        <h2>🏢 Business Energy Calculator</h2>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Annual Electricity (kWh)</label>
+                <input type="number" id="biz-elec" placeholder="e.g. 50000">
+            </div>
+            <div class="form-group">
+                <label>Annual Gas (kWh)</label>
+                <input type="number" id="biz-gas" placeholder="e.g. 100000">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Business Type</label>
+            <select id="biz-type">
+                <option value="office">Office</option>
+                <option value="retail">Retail Shop</option>
+                <option value="warehouse">Warehouse</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        
+        <button class="btn" onclick="calculateCommercial()" style="width: 100%;">Calculate Savings</button>
+        
+        <div id="biz-result" class="result">
+            <h3>📊 Your Business Energy Report</h3>
+            <div class="result-grid">
+                <div class="result-item">
+                    <div class="label">Estimated Annual Cost</div>
+                    <div class="value" id="biz-current">£0</div>
+                </div>
+                <div class="result-item highlight">
+                    <div class="label">Potential Savings</div>
+                    <div class="value" id="biz-savings">£0</div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; text-align: center; color: #666;">Get personalized quote - contact us below!</p>
+        </div>
+    </div>
+    
+    <section class="info">
+        <h2>Why Switch Energy Supplier?</h2>
+        <p>The energy market changes constantly. What was the best deal 2 years ago may now be expensive.</p>
+        <p>Average UK household can save <strong>£300-£500</strong> just by switching.</p>
+    </section>
+    
+    <section class="features">
+        <h2>How It Works</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <div class="feature-icon">1️⃣</div>
+                <h3>Enter Your Usage</h3>
+                <p>Input your annual kWh from your bill</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">2️⃣</div>
+                <h3>Get Free Quote</h3>
+                <p>We compare prices across all major suppliers</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">3️⃣</div>
+                <h3>We Handle the Switch</h3>
+                <p>No paperwork - we do it all for you</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">4️⃣</div>
+                <h3>Start Saving</h3>
+                <p>Enjoy lower bills and better service</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="pricing">
+        <h2>Simple Pricing</h2>
+        <div class="price-cards">
+            <div class="price-card">
+                <h3>Free</h3>
+                <div class="price">£0<span>/month</span></div>
+                <p>1 price alert per month</p>
+                <p>Use our calculator</p>
+                <p>Basic energy guides</p>
+                <a href="#residential-calc" class="btn" onclick="showCalculator('residential'); document.getElementById('residential-calc').scrollIntoView({behavior: 'smooth'})">Try Free</a>
+            </div>
+            <div class="price-card featured">
+                <h3>Pro</h3>
+                <div class="price">£9.99<span>/month</span></div>
+                <p>Unlimited price monitoring</p>
+                <p>Auto-switch service</p>
+                <p>Priority support</p>
+                <p>Best price guarantee</p>
+                <a href="#signup" class="btn" onclick="document.getElementById('signup').scrollIntoView({behavior: 'smooth'})">Go Pro</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta" id="signup">
+        <h2>Ready to Start Saving?</h2>
+        <p>First month free for new customers</p>
+        
+        <!-- Email Capture Form -->
+        <div style="max-width: 500px; margin: 30px auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px;">
+            <p style="margin-bottom: 15px;">Get a free energy quote:</p>
+            <form onsubmit="submitLead(event)">
+                <input type="email" id="lead-email" placeholder="Your email address" required
+                    style="padding: 15px; border-radius: 10px; border: none; width: 70%; font-size: 16px;">
+                <button type="submit" class="btn" style="padding: 15px 30px; width: 28%;">Get Quote</button>
+            </form>
+            <p id="lead-thanks" style="display:none; color: #ffd700; margin-top: 15px;">Thanks! We'll be in touch soon.</p>
+        </div>
+        
+        <a href="mailto:info@ukenergysaver.co.uk" class="btn">Contact Us</a>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="features" id="faq">
+        <h2>❓ Frequently Asked Questions</h2>
+        
+        <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+            <details style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <summary style="font-weight: bold; cursor: pointer;">How does the energy calculator work?</summary>
+                <p style="margin-top: 10px; color: #666;">Our calculator uses the latest Ofgem price caps and market data to estimate your annual energy costs. Enter your annual kWh usage and we'll show your current cost vs potential savings.</p>
+            </details>
+            
+            <details style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <summary style="font-weight: bold; cursor: pointer;">How much can I save by switching?</summary>
+                <p style="margin-top: 10px; color: #666;">Most UK households save £250-£500 per year by switching energy suppliers. Businesses can save 15-25% on their energy bills.</p>
+            </details>
+            
+            <details style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <summary style="font-weight: bold; cursor: pointer;">Is switching energy difficult?</summary>
+                <p style="margin-top: 10px; color: #666;">No! We handle all the paperwork. Simply enter your details, and we'll compare prices from all major suppliers and guide you through the switch.</p>
+            </details>
+            
+            <details style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <summary style="font-weight: bold; cursor: pointer;">Will my supply be interrupted?</summary>
+                <p style="margin-top: 10px; color: #666;">No. Your gas and electricity supply will continue without interruption. The switch typically takes 2-3 weeks and is completely seamless.</p>
+            </details>
+            
+            <details style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                <summary style="font-weight: bold; cursor: pointer;">What information do I need to switch?</summary>
+                <p style="margin-top: 10px; color: #666;">You'll need your postcode, current supplier name, and recent bill showing your annual kWh usage for gas and electricity.</p>
+            </details>
+        </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section style="background: #f0f0f0; padding: 60px 20px; text-align: center;">
+        <h2>🔄 How to Switch</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 40px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+            <div style="flex: 1; min-width: 200px;">
+                <div style="font-size: 48px;">1️⃣</div>
+                <h3>Enter Details</h3>
+                <p>Use our calculator or submit your details</p>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <div style="font-size: 48px;">2️⃣</div>
+                <h3>We Compare</h3>
+                <p>We find the best deals from all suppliers</p>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <div style="font-size: 48px;">3️⃣</div>
+                <h3>Save Money</h3>
+                <p>Enjoy lower bills and better service</p>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <p>© 2026 UK Energy Saver | info@ukenergysaver.co.uk</p>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 10px;">
+            UK Energy Saver compares energy prices to help you find the best deal.<br>
+            We may receive commission from suppliers when you switch through us.
+        </p>
+    </footer>
+    
+    <script>
+        // REAL UK Energy Rates (2025-2026) - From Ofgem & Market Data
+        // Residential: Ofgem Price Cap Jan-March 2026
+        // Business: BusinessEnergyUK, Utility4Business
+        
+        const RESIDENTIAL_RATES = {
+            electricity: { unit: 0.277, standing: 0.536 },  // 27.7p/kWh, 53.6p/day (Ofgem Jan-Mar 2026)
+            gas: { unit: 0.059, standing: 0.340 }           // 5.9p/kWh, 34.0p/day
+        };
+        
+        const BUSINESS_RATES = {
+            // Source: Utility4Business, BusinessEnergyUK (2025-2026)
+            // Electricity: 25.7-27.5p/kWh, Standing: 39.5-114.2p/day (varies by region)
+            // Gas: 5.6-7.2p/kWh, Standing: 35-40p/day
+            electricity: { unit: 0.265, standing: 0.55 },   // 26.5p/kWh, 55p/day average
+            gas: { unit: 0.065, standing: 0.38 }            // 6.5p/kWh, 38p/day average
+        };
+        
+        function showCalculator(type) {
+            document.getElementById('residential-calc').style.display = type === 'residential' ? 'block' : 'none';
+            document.getElementById('commercial-calc').style.display = type === 'commercial' ? 'block' : 'none';
+            
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function calculateResidential() {
+            const elec = parseFloat(document.getElementById('elec-usage').value) || 0;
+            const gas = parseFloat(document.getElementById('gas-usage').value) || 0;
+            
+            // Use Ofgem rates (same for all payment methods in price cap)
+            const rates = RESIDENTIAL_RATES;
+            const days = 365;
+            
+            const elecCost = (elec * rates.electricity.unit) + (rates.electricity.standing * days);
+            const gasCost = (gas * rates.gas.unit) + (rates.gas.standing * days);
+            const total = elecCost + gasCost;
+            
+            // Savings (15-25% by switching from price cap)
+            const savingsLow = total * 0.15;
+            const savingsHigh = total * 0.25;
+            const avgSavings = (savingsLow + savingsHigh) / 2;
+            const newTotal = total - avgSavings;
+            
+            // Display
+            document.getElementById('current-cost').textContent = '£' + total.toLocaleString('en-GB', {maximumFractionDigits: 0});
+            document.getElementById('potential-savings').textContent = '£' + avgSavings.toLocaleString('en-GB', {maximumFractionDigits: 0});
+            document.getElementById('new-cost').textContent = '£' + newTotal.toLocaleString('en-GB', {maximumFractionDigits: 0});
+            document.getElementById('savings-pct').textContent = '20%';
+            
+            document.getElementById('res-result').classList.add('show');
+        }
+        
+        function calculateCommercial() {
+            const elec = parseFloat(document.getElementById('biz-elec').value) || 0;
+            const gas = parseFloat(document.getElementById('biz-gas').value) || 0;
+            
+            const rates = BUSINESS_RATES;
+            const days = 365;
+            
+            const elecCost = (elec * rates.electricity.unit) + (rates.electricity.standing * days);
+            const gasCost = (gas * rates.gas.unit) + (rates.gas.standing * days);
+            const total = elecCost + gasCost;
+            
+            const savings = total * 0.20; // 20% average savings
+            
+            document.getElementById('biz-current').textContent = '£' + total.toLocaleString('en-GB', {maximumFractionDigits: 0});
+            document.getElementById('biz-savings').textContent = '£' + savings.toLocaleString('en-GB', {maximumFractionDigits: 0});
+            
+            document.getElementById('biz-result').classList.add('show');
+            
+            // Add note about regional variation
+            const note = document.getElementById('biz-note');
+            if (!note) {
+                const noteDiv = document.createElement('p');
+                noteDiv.id = 'biz-note';
+                noteDiv.style.cssText = 'margin-top: 20px; text-align: center; color: #666; font-size: 14px;';
+                noteDiv.innerHTML = '⚠️ The calculator uses national averages - for accurate quotes, <a href="https://www.uswitch.com" target="_blank" style="color: #1a5f7a;">compare prices on Uspitch</a> or <a href="https://www.gocompare.com" target="_blank" style="color: #1a5f7a;">GoCompare</a>.';
+                document.getElementById('biz-result').appendChild(noteDiv);
+            }
+        }
+        
+        // Lead capture form
+        function submitLead(event) {
+            event.preventDefault();
+            const email = document.getElementById('lead-email').value;
+            if (email) {
+                // In production, save to database or send to API
+                console.log('Lead captured:', email);
+                document.getElementById('lead-thanks').style.display = 'block';
+                document.getElementById('lead-email').value = '';
+            }
+        }
+    </script>
+</body>
+</html>

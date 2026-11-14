@@ -456,13 +456,36 @@
             }
         }
         
-        // Lead capture form
-        function submitLead(event) {
+        // Lead capture form. Paste the deployed Google Apps Script web-app
+        // URL here when the backend is live. With no endpoint this remains
+        // explicitly demo mode rather than pretending a lead was captured.
+        const LEAD_ENDPOINT = '';
+
+        async function submitLead(event) {
             event.preventDefault();
             const email = document.getElementById('lead-email').value;
             if (email) {
-                // In production, save to database or send to API
-                console.log('Lead captured:', email);
+                try {
+                    if (LEAD_ENDPOINT) {
+                        const response = await fetch(LEAD_ENDPOINT, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, source: 'uk-energy-landing' })
+                        });
+                        if (!response.ok) {
+                            throw new Error(`Lead endpoint returned ${response.status}`);
+                        }
+                        document.getElementById('lead-thanks').textContent =
+                            'Thanks — your request has been received.';
+                    } else {
+                        document.getElementById('lead-thanks').textContent =
+                            'Demo mode — your address was not sent. Connect the Apps Script endpoint before publishing.';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('lead-thanks').textContent =
+                        'We could not submit your request. Please try again.';
+                }
                 document.getElementById('lead-thanks').style.display = 'block';
                 document.getElementById('lead-email').value = '';
             }

@@ -29,7 +29,9 @@
 ### Forms
 - [ ] Email capture form displays
 - [ ] Can enter email
-- [ ] Submit shows thank you message
+- [ ] Submit shows an explicit demo-mode message when no endpoint is set
+- [ ] Submit sends to the configured Apps Script endpoint when one is set
+- [ ] Successful live submit shows a delivery confirmation
 
 ### FAQ Section
 - [ ] FAQ section displays

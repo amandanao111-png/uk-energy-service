@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Quote | Save up to £500</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg: #0a0a0a;
+            --card: #141414;
+            --border: #262626;
+            --text: #fafafa;
+            --text-muted: #737373;
+            --accent: #facc15;
+            --accent-dim: #facc1514;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Atmospheric background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, #facc151a 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #22c55e0a 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .tagline {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 40px;
+            letter-spacing: 0.5px;
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.5;
+        }
+        
+        .form-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px 18px;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        
+        input::placeholder {
+            color: #404040;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            cursor: pointer;
+        }
+        
+        select option {
+            background: var(--card);
+            color: var(--text);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(250, 204, 21, 0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .result h2 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+        
+        .result p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .result strong {
+            color: var(--text);
+        }
+        
+        .savings {
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 20px 0;
+            font-family: 'Instrument Serif', serif;
+        }
+        
+        .savings span {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+        
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 24px;
+        }
+        
+        .links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .links a:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .trust {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 28px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .trust span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⚡ Energy Quote</div>
+        <p class="tagline">Cut your bills. No jargon. No hassle.</p>
+        
+        <div class="card">
+            <div class="form-section show" id="formSection">
+                <p class="form-title">Start your quote</p>
+                
+                <form id="quoteForm">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="name" required placeholder="John Smith">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" required placeholder="john@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Postcode</label>
+                        <input type="text" id="postcode" required placeholder="SW1A 1AA">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Energy Type</label>
+                        <select id="energyType" required>
+                            <option value="">Select...</option>
+                            <option value="electricity">Electricity Only</option>
+                            <option value="gas">Gas Only</option>
+                            <option value="dual">Dual Fuel (Both)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Estimated Annual Spend</label>
+                        <select id="usage" required>
+                            <option value="">Select...</option>
+                            <option value="3100">Around £350/year</option>
+                            <option value="4200">Around £480/year</option>
+                            <option value="5500">Around £620/year</option>
+                            <option value="7000">Around £800/year</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">Get My Quote</button>
+                </form>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted); font-size: 14px;">Finding your best deals...</p>
+            </div>
+            
+            <div class="result" id="result">
+                <div class="result-icon">🎉</div>
+                <h2>Quote Preview Ready!</h2>
+                <p>Hi <strong id="resultName"></strong>
+                    (<span id="resultEmail"></span>), we found deals that could save you:</p>
+                
+                <div class="savings">£<span id="savingsAmount"></span><span>/year</span></div>
+                
+                <p style="margin-top: 16px;" id="resultDelivery">This is a demo preview. No quote has been sent.</p>
+                
+                <div class="links">
+                    <a href="https://www.uswitch.com" target="_blank">🔍 Compare on Uswitch</a>
+                    <a href="https://www.gocompare.com" target="_blank">📊 Compare on GoCompare</a>
+                    <a href="https://www.moneysupermarket.com" target="_blank">💰 Compare on MoneySuperMarket</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="trust">
+            <span>🔒 Secure</span>
+            <span>⚡ Instant</span>
+            <span>💯 Free</span>
+        </div>
+    </div>
+
+    <script>
+        // Paste the deployed Google Apps Script web-app URL here when the
+        // lead backend is live. An empty value is deliberately treated as
+        // demo mode: the old form claimed an email had been sent while it
+        // only wrote the lead to the browser console.
+        const LEAD_ENDPOINT = '';
+
+        const form = document.getElementById('quoteForm');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const formSection = document.getElementById('formSection');
+        
+        const savingsMap = {
+            '3100': 150,
+            '4200': 220,
+            '5500': 300,
+            '7000': 400
+        };
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                const data = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    postcode: document.getElementById('postcode').value,
+                    energyType: document.getElementById('energyType').value,
+                    usage: document.getElementById('usage').value,
+                    timestamp: new Date().toISOString()
+                };
+
+                const savings = savingsMap[data.usage] || 200;
+
+                formSection.classList.remove('show');
+                loading.classList.add('show');
+
+                if (!LEAD_ENDPOINT) {
+                    await new Promise(resolve => setTimeout(resolve, 700));
+                    document.getElementById('resultName').textContent = data.name;
+                    document.getElementById('resultEmail').textContent = data.email;
+                    document.getElementById('savingsAmount').textContent = savings;
+                    document.getElementById('resultDelivery').textContent =
+                        'Demo preview only — no email has been sent. Connect the Apps Script endpoint to capture this lead.';
+                    loading.classList.remove('show');
+                    result.classList.add('show');
+                    return;
+                }
+
+                const response = await fetch(LEAD_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...data, savings })
+                });
+                if (!response.ok) {
+                    throw new Error(`Lead endpoint returned ${response.status}`);
+                }
+
+                document.getElementById('resultName').textContent = data.name;
+                document.getElementById('resultEmail').textContent = data.email;
+                document.getElementById('savingsAmount').textContent = savings;
+                document.getElementById('resultDelivery').innerHTML =
+                    'Your request was sent to <strong>' +
+                    data.email.replace(/[&<>'"]/g, char => ({
+                        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+                    }[char])) +
+                    '</strong>.';
+
+                loading.classList.remove('show');
+                result.classList.add('show');
+            } catch (error) {
+                console.error(error);
+                loading.classList.remove('show');
+                formSection.classList.add('show');
+                alert('We could not submit your request. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get My Quote';
+            }
+        });
+    </script>
+</body>
+</html>

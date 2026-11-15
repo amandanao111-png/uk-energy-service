@@ -1,5 +1,27 @@
 # UK Energy Price Service
 
+## 📍 Current Status (2026-11-15)
+
+**Lead capture backend is deployable but NOT live.** The form in
+`quote-form.html` currently runs in explicit demo mode because
+`LEAD_ENDPOINT` is empty — it never claims a lead was sent.
+
+**One human step remains (~10 min):**
+
+1. Create a Google Sheet named "Energy Leads" with a `Leads` tab
+2. Paste `appsscript.gs` into script.google.com, add Script Properties
+   `SPREADSHEET_ID`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
+3. Deploy as a web app (Execute as: Me, Who has access: Anyone)
+4. Paste the deployed URL into `LEAD_ENDPOINT` in `quote-form.html`
+
+Setup detail: `LEAD_GEN_SETUP.md` · Endpoint behaviour: `appsscript.gs`
+Live-check list: `TEST_CHECKLIST.md` · Price polling: `price_monitor.py`
+Acquisition copy: `MARKETING.md` · Automation option: `n8n_workflow.md`
+
+**Known gap:** the site has a quote calculator but no price-history chart
+and no supplier comparison table — see `suppliers.md` for the raw source
+list that the comparison still has to be built from.
+
 ## 🌙 Night Build Project
 
 ### 产品概念
